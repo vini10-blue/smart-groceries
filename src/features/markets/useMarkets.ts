@@ -80,6 +80,62 @@ export function useSetDefaultMarket(householdId: string) {
   });
 }
 
+/**
+ * Create a market and pre-fill its aisle layout from a suggested list of
+ * category names (mapped to the household's category IDs).
+ */
+export function useCreateMarketWithLayout(householdId: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async ({
+      name,
+      layoutNames,
+    }: {
+      name: string;
+      layoutNames: string[];
+    }) => {
+      const { data: market, error: insErr } = await supabase
+        .from('markets')
+        .insert({ household_id: householdId, name: name.trim() })
+        .select('id')
+        .single();
+      if (insErr) throw insErr;
+      const marketId = (market as { id: string }).id;
+
+      const { data: cats, error: catErr } = await supabase
+        .from('categories')
+        .select('id, name')
+        .eq('household_id', householdId)
+        .is('deleted_at', null);
+      if (catErr) throw catErr;
+
+      const byName = new Map(
+        (cats as { id: string; name: string }[]).map((c) => [
+          c.name.toLowerCase(),
+          c.id,
+        ])
+      );
+      const rows = layoutNames
+        .map((n, i) => ({ id: byName.get(n.toLowerCase()), position: i }))
+        .filter((r): r is { id: string; position: number } => !!r.id)
+        .map((r) => ({
+          market_id: marketId,
+          category_id: r.id,
+          position: r.position,
+        }));
+
+      if (rows.length > 0) {
+        const { error: layoutErr } = await supabase
+          .from('market_category_orders')
+          .insert(rows);
+        if (layoutErr) throw layoutErr;
+      }
+      return marketId;
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: key(householdId) }),
+  });
+}
+
 export function useDeleteMarket(householdId: string) {
   const qc = useQueryClient();
   return useMutation({

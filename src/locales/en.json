@@ -67,7 +67,13 @@
     "address": "Address (optional)",
     "setDefault": "Set as default",
     "layout": "Aisle layout",
-    "layoutHint": "Drag categories to match the order you find them in the store."
+    "layoutHint": "Drag categories to match the order you find them in the store.",
+    "quickAddTitle": "Quick add a known store",
+    "country": "Country",
+    "quickAddHint": "Pick your store — we'll pre-fill a suggested aisle layout you can then tweak.",
+    "otherManual": "Other (add manually)",
+    "manualAddTitle": "Add manually",
+    "added": "{{name}} added with a suggested layout — open Aisle layout to adjust it."
   },
   "categories": {
     "title": "Categories",
