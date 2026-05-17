@@ -130,3 +130,58 @@ body {
 }
 
 @keyframes spin { to { transform: rotate(360deg); } }
+
+.text-input {
+  width: 100%;
+  padding: 12px 14px;
+  font-size: 16px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  outline: none;
+}
+.text-input:focus { border-color: var(--green); }
+
+.inline-form { display: flex; gap: 8px; }
+.inline-form .text-input { flex: 1; }
+
+.stack-form { display: flex; flex-direction: column; gap: 10px; }
+
+.row-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+}
+
+.row.column {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.row-main { display: flex; flex-direction: column; gap: 2px; }
+
+.row-title { font-size: 16px; font-weight: 500; display: flex; align-items: center; gap: 8px; }
+
+.row-actions { display: flex; gap: 14px; align-items: center; }
+.row-actions.wrap { flex-wrap: wrap; }
+
+.btn-link.danger { color: var(--danger); }
+
+.badge {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--green-dark);
+  background: #e7f4ec;
+  padding: 2px 8px;
+  border-radius: 999px;
+}
