@@ -1,0 +1,79 @@
+{
+  "common": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "add": "Add",
+    "done": "Done",
+    "back": "Back",
+    "loading": "Loading…"
+  },
+  "auth": {
+    "signIn": "Sign in with Microsoft",
+    "signOut": "Sign out",
+    "signingIn": "Signing in…",
+    "closedBetaTitle": "Closed beta",
+    "closedBetaBody": "This app is currently in private beta. Your account is not on the allowlist.",
+    "yourEmail": "Signed in as: {{email}}"
+  },
+  "list": {
+    "title": "Grocery list",
+    "empty": "Your list is empty. Tap + to add an item.",
+    "selectMarket": "Select a market",
+    "noMarket": "No market selected",
+    "addItem": "Add item",
+    "voiceInput": "Voice input",
+    "doneShopping": "Done shopping",
+    "addedBy": "Added by {{name}}",
+    "checked": "Checked",
+    "unchecked": "Unchecked"
+  },
+  "addItem": {
+    "title": "Add item",
+    "name": "Name",
+    "quantity": "Quantity",
+    "unit": "Unit",
+    "unitDefault": "Un",
+    "category": "Category",
+    "notes": "Notes (optional)",
+    "uncategorized": "Other"
+  },
+  "voice": {
+    "title": "Voice input",
+    "tapToSpeak": "Tap to speak",
+    "listening": "Listening…",
+    "transcript": "Transcript",
+    "previewTitle": "Items detected",
+    "addAll": "Add all",
+    "tryAgain": "Try again"
+  },
+  "markets": {
+    "title": "Markets",
+    "addMarket": "Add market",
+    "name": "Name",
+    "address": "Address (optional)",
+    "setDefault": "Set as default",
+    "layout": "Aisle layout",
+    "layoutHint": "Drag categories to match the order you find them in the store."
+  },
+  "categories": {
+    "title": "Categories",
+    "addCategory": "Add category",
+    "name": "Name"
+  },
+  "settings": {
+    "title": "Settings",
+    "displayName": "Display name",
+    "language": "Language",
+    "members": "Household members",
+    "version": "Version"
+  },
+  "doneShopping": {
+    "title": "Done shopping",
+    "totalAmount": "Total amount (€)",
+    "totalAmountRequired": "Please enter the total amount to complete the trip",
+    "summary": "{{count}} items at {{market}}",
+    "save": "Save trip"
+  }
+}
