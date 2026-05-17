@@ -2,13 +2,17 @@ import { NavLink, Outlet } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useOnline } from '../hooks/useOnline';
 
-export function Layout() {
+export function Layout({ isOwner }: { isOwner: boolean }) {
   const { t } = useTranslation();
   const online = useOnline();
 
   return (
     <div className="app-shell">
-      {!online && <div className="offline-banner">Offline — changes will sync when you reconnect</div>}
+      {!online && (
+        <div className="offline-banner">
+          Offline — changes will sync when you reconnect
+        </div>
+      )}
       <main className="app-main">
         <Outlet />
       </main>
@@ -22,6 +26,11 @@ export function Layout() {
         <NavLink to="/categories" className="tab">
           {t('categories.title')}
         </NavLink>
+        {isOwner && (
+          <NavLink to="/members" className="tab">
+            {t('members.title')}
+          </NavLink>
+        )}
       </nav>
     </div>
   );

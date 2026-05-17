@@ -13,9 +13,21 @@
     "signIn": "Sign in with Microsoft",
     "signOut": "Sign out",
     "signingIn": "Signing in…",
-    "closedBetaTitle": "Closed beta",
-    "closedBetaBody": "This app is currently in private beta. Your account is not on the allowlist.",
-    "yourEmail": "Signed in as: {{email}}"
+    "yourEmail": "Signed in as: {{email}}",
+    "pendingTitle": "Access pending",
+    "pendingBody": "Your account is registered and waiting for the owner to approve access. You'll be able to use the app once approved.",
+    "refresh": "Check again"
+  },
+  "members": {
+    "title": "Members",
+    "pending": "Pending requests",
+    "approved": "Approved",
+    "approve": "Approve",
+    "reject": "Reject",
+    "owner": "Owner",
+    "none": "No members yet.",
+    "noPending": "No pending requests.",
+    "confirmReject": "Remove {{name}}'s access?"
   },
   "list": {
     "title": "Grocery list",
