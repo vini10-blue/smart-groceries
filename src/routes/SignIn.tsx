@@ -4,29 +4,69 @@ import { useAuth } from '../auth/AuthProvider';
 
 export default function SignIn() {
   const { t } = useTranslation();
-  const { signInWithMicrosoft } = useAuth();
-  const [loading, setLoading] = useState(false);
+  const { signInWithEmail } = useAuth();
+  const [email, setEmail] = useState('');
+  const [sending, setSending] = useState(false);
+  const [sent, setSent] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const onClick = async () => {
+  const onSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const trimmed = email.trim();
+    if (!trimmed || !trimmed.includes('@')) {
+      setError(t('auth.emailInvalid'));
+      return;
+    }
     try {
-      setLoading(true);
+      setSending(true);
       setError(null);
-      await signInWithMicrosoft();
-      // Redirects away to Microsoft; on return, AuthProvider picks up the session.
-    } catch (e) {
-      setError(e instanceof Error ? e.message : 'Sign-in failed');
-      setLoading(false);
+      await signInWithEmail(trimmed);
+      setSent(true);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Sign-in failed');
+    } finally {
+      setSending(false);
     }
   };
 
+  if (sent) {
+    return (
+      <div className="centered signin">
+        <h1>Smart Groceries</h1>
+        <h2>{t('auth.linkSentTitle')}</h2>
+        <p className="muted">{t('auth.linkSentBody', { email })}</p>
+        <button
+          className="btn-link"
+          onClick={() => {
+            setSent(false);
+            setEmail('');
+          }}
+        >
+          {t('auth.useAnotherEmail')}
+        </button>
+      </div>
+    );
+  }
+
   return (
-    <div className="centered signin">
+    <form className="centered signin" onSubmit={onSubmit}>
       <h1>Smart Groceries</h1>
-      <button className="btn-primary" onClick={onClick} disabled={loading}>
-        {loading ? t('auth.signingIn') : t('auth.signIn')}
+      <p className="muted">{t('auth.signInBody')}</p>
+      <input
+        className="text-input"
+        type="email"
+        inputMode="email"
+        autoComplete="email"
+        placeholder={t('auth.emailPlaceholder')}
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+        required
+        autoFocus
+      />
+      <button className="btn-primary" type="submit" disabled={sending}>
+        {sending ? t('auth.sending') : t('auth.sendLink')}
       </button>
       {error && <p className="error-text">{error}</p>}
-    </div>
+    </form>
   );
 }

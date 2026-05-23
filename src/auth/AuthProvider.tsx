@@ -20,7 +20,7 @@ type AuthState = {
   role: MemberRole;
   householdId: string | null;
   refreshMembership: () => Promise<void>;
-  signInWithMicrosoft: () => Promise<void>;
+  signInWithEmail: (email: string) => Promise<void>;
   signOut: () => Promise<void>;
 };
 
@@ -82,12 +82,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, [session?.user?.id, refreshMembership]);
 
-  const signInWithMicrosoft = async () => {
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: 'azure',
+  const signInWithEmail = async (email: string) => {
+    const { error } = await supabase.auth.signInWithOtp({
+      email: email.trim().toLowerCase(),
       options: {
-        redirectTo: window.location.origin,
-        scopes: 'email openid profile offline_access',
+        emailRedirectTo: window.location.origin,
+        shouldCreateUser: true,
       },
     });
     if (error) throw error;
@@ -107,7 +107,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         role,
         householdId,
         refreshMembership,
-        signInWithMicrosoft,
+        signInWithEmail,
         signOut,
       }}
     >

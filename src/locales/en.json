@@ -10,9 +10,15 @@
     "loading": "Loading…"
   },
   "auth": {
-    "signIn": "Sign in with Microsoft",
+    "signInBody": "Enter your email and we'll send you a one-time sign-in link.",
+    "emailPlaceholder": "you@example.com",
+    "emailInvalid": "Please enter a valid email address.",
+    "sendLink": "Send sign-in link",
+    "sending": "Sending…",
+    "linkSentTitle": "Check your email",
+    "linkSentBody": "We sent a sign-in link to {{email}}. Open it on this device to continue.",
+    "useAnotherEmail": "Use a different email",
     "signOut": "Sign out",
-    "signingIn": "Signing in…",
     "yourEmail": "Signed in as: {{email}}",
     "pendingTitle": "Access pending",
     "pendingBody": "Your account is registered and waiting for the owner to approve access. You'll be able to use the app once approved.",
