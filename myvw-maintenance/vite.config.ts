@@ -2,7 +2,12 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import { VitePWA } from "vite-plugin-pwa";
 
+// On GitHub Pages the app is served from a sub-path (e.g. /smart-groceries/).
+// CI sets BASE_PATH; local dev/build stays at the root.
+const base = process.env.BASE_PATH || "/";
+
 export default defineConfig({
+  base,
   plugins: [
     react(),
     VitePWA({
@@ -16,7 +21,8 @@ export default defineConfig({
         theme_color: "#0b3d2e",
         background_color: "#0b3d2e",
         display: "standalone",
-        start_url: "/",
+        start_url: base,
+        scope: base,
         icons: [
           {
             src: "icon.svg",

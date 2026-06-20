@@ -1,0 +1,62 @@
+# Builds the MyVW Maintenance PWA and deploys it to GitHub Pages.
+# One-time setup in the repo: Settings -> Pages -> Source = "GitHub Actions".
+name: Deploy MyVW Maintenance to Pages
+
+on:
+  push:
+    branches:
+      - claude/vw-maintenance-tracker-vchhv2
+    paths:
+      - "myvw-maintenance/**"
+      - ".github/workflows/deploy-myvw.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Allow one concurrent deployment; cancel in-progress runs for the same ref.
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: myvw-maintenance
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: myvw-maintenance/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        # Served from https://<owner>.github.io/<repo>/ -> base path = /<repo>/
+        run: npm run build
+        env:
+          BASE_PATH: /${{ github.event.repository.name }}/
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: myvw-maintenance/dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
