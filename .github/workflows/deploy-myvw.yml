@@ -30,6 +30,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # Enables Pages (source = GitHub Actions) on the first run, so no manual
+      # repo-settings step is needed.
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+        with:
+          enablement: true
+
       - uses: actions/setup-node@v4
         with:
           node-version: 20
