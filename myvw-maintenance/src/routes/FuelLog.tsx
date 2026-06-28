@@ -1,11 +1,12 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useLiveQuery } from "dexie-react-hooks";
 import { useParams } from "react-router-dom";
 import { Layout } from "../components/Layout";
 import { EmptyState } from "../components/EmptyState";
 import { repo } from "../lib/db/repo";
 import { CURRENCIES, fuelEconomy, formatDate, formatMoney, todayIso } from "../lib/format";
-import type { FuelLog, VolumeUnit } from "../lib/types";
+import { useSettings } from "../lib/useSettings";
+import { DEFAULT_SETTINGS, type FuelLog, type VolumeUnit } from "../lib/types";
 
 interface FuelRowView {
   log: FuelLog;
@@ -25,6 +26,14 @@ export function FuelLogPage() {
   const [currency, setCurrency] = useState("USD");
   const [fullTank, setFullTank] = useState(true);
   const [open, setOpen] = useState(false);
+
+  const settings = useSettings();
+  const [curPrefilled, setCurPrefilled] = useState(false);
+  useEffect(() => {
+    if (curPrefilled || settings.updatedAt === DEFAULT_SETTINGS.updatedAt) return;
+    setCurrency(settings.defaultCurrency);
+    setCurPrefilled(true);
+  }, [settings, curPrefilled]);
 
   // Compute economy between consecutive full-tank fills (oldest→newest).
   const rows: FuelRowView[] = [];

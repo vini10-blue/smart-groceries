@@ -52,6 +52,17 @@ create table if not exists public.attachments (
   deleted boolean not null default false
 );
 
+-- App settings: one row per user (keyed by user_id, not a random id).
+create table if not exists public.settings (
+  user_id uuid primary key default auth.uid() references auth.users (id) on delete cascade,
+  data jsonb not null default '{}',
+  updated_at timestamptz not null default now()
+);
+alter table public.settings enable row level security;
+drop policy if exists "own settings" on public.settings;
+create policy "own settings" on public.settings
+  for all using (user_id = auth.uid()) with check (user_id = auth.uid());
+
 -- ---- Row-Level Security: each user can only touch their own rows ------------
 do $$
 declare t text;

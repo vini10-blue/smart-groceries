@@ -14,12 +14,15 @@ import {
 import { CURRENCIES, todayIso } from "../lib/format";
 import { CATALOG_BY_KEY } from "../lib/schedule/catalog";
 import { scanReceipt } from "../lib/ocr";
+import { useSettings } from "../lib/useSettings";
+import { DEFAULT_SETTINGS } from "../lib/types";
 
 export function RecordEditor() {
   const { id = "", recordId } = useParams();
   const [params] = useSearchParams();
   const navigate = useNavigate();
   const isEdit = Boolean(recordId);
+  const settings = useSettings();
 
   const [car, setCar] = useState<Car>();
   const [serviceKey, setServiceKey] = useState<string | undefined>();
@@ -45,6 +48,16 @@ export function RecordEditor() {
       setOdometer((prev) => (prev === "" && !recordId ? String(c.odometer) : prev));
     });
   }, [id, recordId]);
+
+  // Apply user's default currency / performed-by to new records once settings load.
+  const [prefilled, setPrefilled] = useState(false);
+  useEffect(() => {
+    if (recordId || prefilled) return;
+    if (settings.updatedAt === DEFAULT_SETTINGS.updatedAt) return;
+    setCurrency(settings.defaultCurrency);
+    setPerformedBy(settings.defaultPerformedBy);
+    setPrefilled(true);
+  }, [settings, recordId, prefilled]);
 
   // Prefill from ?service= for new records.
   useEffect(() => {
@@ -207,6 +220,28 @@ export function RecordEditor() {
             </div>
           )}
         </div>
+
+        {!isEdit && settings.presets.length > 0 && (
+          <div className="field" style={{ marginTop: 12 }}>
+            <label>Quick pick (your presets)</label>
+            <select
+              value=""
+              onChange={(e) => {
+                const p = settings.presets.find((x) => x.key === e.target.value);
+                if (p) {
+                  setServiceKey(p.key);
+                  setTitle(p.name);
+                  setCategory(p.category);
+                }
+              }}
+            >
+              <option value="">Choose a preset…</option>
+              {settings.presets.map((p) => (
+                <option key={p.key} value={p.key}>{p.name}</option>
+              ))}
+            </select>
+          </div>
+        )}
 
         <div className="field" style={{ marginTop: 12 }}>
           <label>What was done</label>

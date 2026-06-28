@@ -5,7 +5,7 @@ import { Layout } from "../components/Layout";
 import { DueBadge } from "../components/DueBadge";
 import { repo } from "../lib/db/repo";
 import { resolveServicesForCar } from "../lib/schedule/applicability";
-import { computeAllDue, type DueStatus } from "../lib/schedule/due";
+import { computeAllDue, configureReminders, type DueStatus } from "../lib/schedule/due";
 import { formatDate, milesToUnit } from "../lib/format";
 
 function ServiceRow({
@@ -87,7 +87,9 @@ export function ServiceSuggestions() {
     const car = await repo.cars.get(id);
     if (!car) return undefined;
     const records = await repo.records.listByCar(id);
-    const services = resolveServicesForCar(car);
+    const settings = await repo.settings.get();
+    configureReminders(settings.reminderLeadMiles, settings.reminderLeadDays);
+    const services = resolveServicesForCar(car, settings.presets);
     const due = computeAllDue(car, services, records);
     return { car, due };
   }, [id]);

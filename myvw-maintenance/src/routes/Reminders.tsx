@@ -5,7 +5,7 @@ import { EmptyState } from "../components/EmptyState";
 import { DueBadge } from "../components/DueBadge";
 import { repo } from "../lib/db/repo";
 import { resolveServicesForCar } from "../lib/schedule/applicability";
-import { computeAllDue, type DueStatus } from "../lib/schedule/due";
+import { computeAllDue, configureReminders, type DueStatus } from "../lib/schedule/due";
 import type { Car } from "../lib/types";
 
 interface DueForCar {
@@ -18,10 +18,12 @@ export function Reminders() {
 
   const data = useLiveQuery(async () => {
     const cars = await repo.cars.list();
+    const settings = await repo.settings.get();
+    configureReminders(settings.reminderLeadMiles, settings.reminderLeadDays);
     const out: DueForCar[] = [];
     for (const car of cars) {
       const records = await repo.records.listByCar(car.id);
-      const services = resolveServicesForCar(car);
+      const services = resolveServicesForCar(car, settings.presets);
       const due = computeAllDue(car, services, records).filter(
         (d) => d.level === "overdue" || d.level === "due_soon",
       );

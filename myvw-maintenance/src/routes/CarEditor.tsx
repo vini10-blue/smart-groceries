@@ -3,6 +3,8 @@ import { useForm } from "react-hook-form";
 import { useNavigate, useParams } from "react-router-dom";
 import { Layout } from "../components/Layout";
 import { repo, type NewCar } from "../lib/db/repo";
+import { useSettings } from "../lib/useSettings";
+import { DEFAULT_SETTINGS } from "../lib/types";
 import {
   CAR_MODEL_LABELS,
   type Car,
@@ -46,10 +48,12 @@ export function CarEditor() {
   const [existing, setExisting] = useState<Car | undefined>();
   const [photoFile, setPhotoFile] = useState<File | undefined>();
 
+  const settings = useSettings();
   const {
     register,
     handleSubmit,
     reset,
+    setValue,
     formState: { errors, isSubmitting },
   } = useForm<FormValues>({
     defaultValues: {
@@ -85,6 +89,12 @@ export function CarEditor() {
       });
     });
   }, [id, reset]);
+
+  // New car: seed the distance unit from the user's default.
+  useEffect(() => {
+    if (id || settings.updatedAt === DEFAULT_SETTINGS.updatedAt) return;
+    setValue("distanceUnit", settings.defaultDistanceUnit);
+  }, [id, settings, setValue]);
 
   async function onSubmit(v: FormValues) {
     const base: NewCar = {

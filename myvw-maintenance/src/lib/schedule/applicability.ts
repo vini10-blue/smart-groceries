@@ -1,4 +1,4 @@
-import type { Car } from "../types";
+import type { Car, PresetService } from "../types";
 import {
   CATALOG_BY_KEY,
   SERVICE_CATALOG,
@@ -98,7 +98,10 @@ function override(car: Car, item: ServiceItem): ResolvedService | null {
  * The full, ordered list of services that apply to a car: catalog items
  * (filtered by applicability + mods + overrides) followed by custom items.
  */
-export function resolveServicesForCar(car: Car): ResolvedService[] {
+export function resolveServicesForCar(
+  car: Car,
+  presets: PresetService[] = [],
+): ResolvedService[] {
   const fromCatalog: ResolvedService[] = [];
   for (const item of SERVICE_CATALOG) {
     if (!matchesAppliesTo(car, item)) continue;
@@ -138,5 +141,19 @@ export function resolveServicesForCar(car: Car): ResolvedService[] {
     origin: "custom",
   }));
 
-  return [...fromCatalog, ...custom];
+  // Global preset services apply to every car (unless disabled per car).
+  const presetServices: ResolvedService[] = presets
+    .filter((p) => !car.intervalOverrides?.[p.key]?.disabled)
+    .map((p) => ({
+      key: p.key,
+      name: p.name,
+      category: p.category,
+      intervalMiles: car.intervalOverrides?.[p.key]?.miles ?? p.intervalMiles ?? null,
+      intervalMonths: car.intervalOverrides?.[p.key]?.months ?? p.intervalMonths ?? null,
+      checklist: p.checklist ?? [],
+      severity: "routine",
+      origin: "custom",
+    }));
+
+  return [...fromCatalog, ...custom, ...presetServices];
 }

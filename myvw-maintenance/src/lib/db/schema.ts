@@ -1,5 +1,6 @@
 import Dexie, { type Table } from "dexie";
 import type {
+  AppSettings,
   Attachment,
   Car,
   FuelLog,
@@ -15,6 +16,7 @@ export class MyVWDatabase extends Dexie {
   fuelLogs!: Table<FuelLog, string>;
   attachments!: Table<Attachment, string>;
   reminders!: Table<Reminder, string>;
+  settings!: Table<AppSettings, string>;
 
   constructor() {
     super("myvw-maintenance");
@@ -24,6 +26,10 @@ export class MyVWDatabase extends Dexie {
       fuelLogs: "id, carId, date",
       attachments: "id, carId, recordId, kind",
       reminders: "id, carId, done",
+    });
+    // v2 adds a single-row app settings store (id is always "app").
+    this.version(2).stores({
+      settings: "id",
     });
   }
 }

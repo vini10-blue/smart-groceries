@@ -13,7 +13,7 @@
 
 import { db } from "./db/schema";
 import { ATTACHMENT_BUCKET, supabase } from "./supabase";
-import type { Attachment } from "./types";
+import type { AppSettings, Attachment } from "./types";
 
 type EntityKey = "cars" | "records" | "fuelLogs" | "reminders";
 
@@ -161,6 +161,43 @@ export function cloudDeleteAttachment(id: string): void {
   flushSoon();
 }
 
+// Settings live in their own table keyed by user_id (one row per account).
+export async function cloudUpsertSettings(s: AppSettings): Promise<void> {
+  if (!supabase) return;
+  const userId = await uid();
+  if (!userId) return;
+  await supabase
+    .from("settings")
+    .upsert({ user_id: userId, data: s, updated_at: s.updatedAt });
+}
+
+async function pushSettings(userId: string) {
+  if (!supabase) return;
+  const local = await db.settings.get("app");
+  if (local) {
+    await supabase
+      .from("settings")
+      .upsert({ user_id: userId, data: local, updated_at: local.updatedAt });
+  }
+}
+
+async function pullSettings(userId: string) {
+  if (!supabase) return;
+  const { data, error } = await supabase
+    .from("settings")
+    .select("data,updated_at")
+    .eq("user_id", userId)
+    .maybeSingle();
+  if (error || !data) return;
+  const cloud = data.data as AppSettings;
+  const local = await db.settings.get("app");
+  const cloudMs = Date.parse(data.updated_at);
+  const localMs = local ? Date.parse(local.updatedAt) : -Infinity;
+  if (!local || cloudMs >= localMs) {
+    await db.settings.put({ ...cloud, id: "app" });
+  }
+}
+
 // ---- bulk push / pull -----------------------------------------------------
 async function pushAllLocal(userId: string) {
   if (!supabase) return;
@@ -248,6 +285,7 @@ export async function clearLocalData(): Promise<void> {
     db.fuelLogs.clear(),
     db.attachments.clear(),
     db.reminders.clear(),
+    db.settings.clear(),
   ]);
   localStorage.removeItem(DEL_KEY);
 }
@@ -276,7 +314,9 @@ export async function fullSync(): Promise<void> {
     }
     await flushDeletions(userId);
     await pushAllLocal(userId);
+    await pushSettings(userId);
     await pullAll(userId);
+    await pullSettings(userId);
     localStorage.setItem(LAST_USER_KEY, userId);
     lastSyncAt = new Date().toISOString();
     setStatus("idle");

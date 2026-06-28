@@ -1,6 +1,7 @@
 import { Routes, Route } from "react-router-dom";
 import { useAuth } from "./auth/AuthProvider";
 import { SyncManager } from "./components/SyncManager";
+import { ReminderNotifier } from "./components/ReminderNotifier";
 import { Garage } from "./routes/Garage";
 import { CarEditor } from "./routes/CarEditor";
 import { CarDetail } from "./routes/CarDetail";
@@ -12,6 +13,7 @@ import { Reminders } from "./routes/Reminders";
 import { Reports } from "./routes/Reports";
 import { SignIn } from "./routes/SignIn";
 import { Account } from "./routes/Account";
+import { Settings } from "./routes/Settings";
 
 export default function App() {
   const { loading, cloudEnabled, user } = useAuth();
@@ -36,9 +38,11 @@ export default function App() {
   return (
     <>
       <SyncManager />
+      <ReminderNotifier />
       <Routes>
         <Route path="/" element={<Garage />} />
         <Route path="/account" element={<Account />} />
+        <Route path="/settings" element={<Settings />} />
         <Route path="/car/new" element={<CarEditor />} />
         <Route path="/car/:id" element={<CarDetail />} />
         <Route path="/car/:id/edit" element={<CarEditor />} />

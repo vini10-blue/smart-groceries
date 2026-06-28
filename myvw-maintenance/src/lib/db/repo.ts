@@ -9,13 +9,16 @@ import {
   cloudDeleteAttachment,
   cloudUpsert,
   cloudUpsertAttachment,
+  cloudUpsertSettings,
 } from "../sync";
-import type {
-  Attachment,
-  Car,
-  FuelLog,
-  MaintenanceRecord,
-  Reminder,
+import {
+  DEFAULT_SETTINGS,
+  type AppSettings,
+  type Attachment,
+  type Car,
+  type FuelLog,
+  type MaintenanceRecord,
+  type Reminder,
 } from "../types";
 
 export function newId(): string {
@@ -166,6 +169,25 @@ export const repo = {
     async remove(id: string): Promise<void> {
       await db.attachments.delete(id);
       cloudDeleteAttachment(id);
+    },
+  },
+
+  settings: {
+    async get(): Promise<AppSettings> {
+      const s = await db.settings.get("app");
+      return s ? { ...DEFAULT_SETTINGS, ...s } : DEFAULT_SETTINGS;
+    },
+    async save(patch: Partial<AppSettings>): Promise<AppSettings> {
+      const current = await repo.settings.get();
+      const next: AppSettings = {
+        ...current,
+        ...patch,
+        id: "app",
+        updatedAt: nowIso(),
+      };
+      await db.settings.put(next);
+      mirror(cloudUpsertSettings(next));
+      return next;
     },
   },
 

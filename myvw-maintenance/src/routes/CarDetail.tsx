@@ -6,7 +6,7 @@ import { repo } from "../lib/db/repo";
 import { CAR_MODEL_LABELS } from "../lib/types";
 import { formatDistance, formatMoney } from "../lib/format";
 import { resolveServicesForCar } from "../lib/schedule/applicability";
-import { computeAllDue } from "../lib/schedule/due";
+import { computeAllDue, configureReminders } from "../lib/schedule/due";
 
 export function CarDetail() {
   const { id = "" } = useParams();
@@ -17,7 +17,9 @@ export function CarDetail() {
     const c = await repo.cars.get(id);
     if (!c) return undefined;
     const records = await repo.records.listByCar(id);
-    const services = resolveServicesForCar(c);
+    const settings = await repo.settings.get();
+    configureReminders(settings.reminderLeadMiles, settings.reminderLeadDays);
+    const services = resolveServicesForCar(c, settings.presets);
     const due = computeAllDue(c, services, records);
     const totalCost = records.reduce((s, r) => s + (r.cost ?? 0), 0);
     return {

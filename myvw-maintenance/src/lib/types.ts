@@ -150,6 +150,42 @@ export interface Attachment {
   createdAt: string;
 }
 
+/** A reusable service template the user defines once and can log on any car. */
+export interface PresetService {
+  key: string; // "preset:<uuid>"
+  name: string;
+  category: ServiceCategory;
+  intervalMiles?: number | null;
+  intervalMonths?: number | null;
+  checklist: string[];
+}
+
+/** App-wide preferences. A single row, id === "app". Synced per account. */
+export interface AppSettings {
+  id: "app";
+  defaultCurrency: string;
+  defaultDistanceUnit: DistanceUnit;
+  defaultPerformedBy: string;
+  /** "Due soon" lead time before a service is actually due. */
+  reminderLeadMiles: number;
+  reminderLeadDays: number;
+  notificationsEnabled: boolean;
+  presets: PresetService[];
+  updatedAt: string;
+}
+
+export const DEFAULT_SETTINGS: AppSettings = {
+  id: "app",
+  defaultCurrency: "USD",
+  defaultDistanceUnit: "mi",
+  defaultPerformedBy: "DIY",
+  reminderLeadMiles: 300,
+  reminderLeadDays: 30,
+  notificationsEnabled: false,
+  presets: [],
+  updatedAt: "1970-01-01T00:00:00.000Z",
+};
+
 /** A user-created reminder not derived from the schedule. */
 export interface Reminder {
   id: string;

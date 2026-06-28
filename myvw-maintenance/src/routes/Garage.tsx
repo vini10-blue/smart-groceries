@@ -7,7 +7,7 @@ import { db } from "../lib/db/schema";
 import { CAR_MODEL_LABELS, type Car } from "../lib/types";
 import { formatDistance } from "../lib/format";
 import { resolveServicesForCar } from "../lib/schedule/applicability";
-import { computeAllDue } from "../lib/schedule/due";
+import { computeAllDue, configureReminders } from "../lib/schedule/due";
 import { useEffect, useState } from "react";
 
 function CarPhoto({ photoId }: { photoId?: string }) {
@@ -30,7 +30,9 @@ function CarCard({ car }: { car: Car }) {
   const navigate = useNavigate();
   const dueCounts = useLiveQuery(async () => {
     const records = await repo.records.listByCar(car.id);
-    const services = resolveServicesForCar(car);
+    const settings = await repo.settings.get();
+    configureReminders(settings.reminderLeadMiles, settings.reminderLeadDays);
+    const services = resolveServicesForCar(car, settings.presets);
     const all = computeAllDue(car, services, records);
     return {
       overdue: all.filter((d) => d.level === "overdue").length,
@@ -77,6 +79,13 @@ export function Garage() {
       title="My Garage"
       action={
         <div className="row" style={{ gap: 8 }}>
+          <button
+            className="btn btn--sm"
+            aria-label="Settings"
+            onClick={() => navigate("/settings")}
+          >
+            ⚙️
+          </button>
           <button
             className="btn btn--sm"
             aria-label="Account and sync"
