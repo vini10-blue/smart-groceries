@@ -18,8 +18,8 @@ export default defineConfig({
         short_name: "MyVW",
         description:
           "Maintenance, costs and fuel tracking for classic air-cooled VWs.",
-        theme_color: "#0b3d2e",
-        background_color: "#0b3d2e",
+        theme_color: "#2f5c4f",
+        background_color: "#ece2cd",
         display: "standalone",
         start_url: base,
         scope: base,

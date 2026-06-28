@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useAuth } from "../auth/AuthProvider";
+import { Emblem } from "../components/Emblem";
 
 export function SignIn() {
   const { signInWithEmail } = useAuth();
@@ -22,7 +23,8 @@ export function SignIn() {
   return (
     <div className="app">
       <header className="appbar">
-        <h1 className="appbar__title">🚗 MyVW Maintenance</h1>
+        <Emblem />
+        <h1 className="appbar__title">MyVW Maintenance</h1>
       </header>
       <main className="app__main">
         <div className="card" style={{ marginTop: 24 }}>

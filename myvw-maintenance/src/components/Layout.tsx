@@ -1,5 +1,6 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import type { ReactNode } from "react";
+import { Emblem } from "./Emblem";
 
 const TABS = [
   { to: "/", label: "Garage", icon: "🚗", match: (p: string) => p === "/" || p.startsWith("/car") },
@@ -29,6 +30,7 @@ export function Layout({
             ← Back
           </button>
         )}
+        {!back && <Emblem />}
         <h1 className="appbar__title">{title}</h1>
         <span className="appbar__spacer" />
         {action}
